@@ -1,0 +1,13 @@
+name: "pocket-js-server"
+
+services:
+  pg:
+    image: bitnami/postgresql:13.16.0
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=inorbit
+    container_name: "pocket-js-server-pg"
+    ports:
+      - "5432:5432"
+  
