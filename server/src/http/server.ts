@@ -1,32 +1,28 @@
-import fastify, { type FastifyTypeProvider } from 'fastify'
-import { createGoal } from '../functions/create-goal'
-import { CreateGoalSchema } from '../dtos/create-goal.dto'
+import fastify from 'fastify'
 import {
   serializerCompiler,
   validatorCompiler,
+  type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
-import type { z, ZodTypeAny } from 'zod'
-
-interface ZodTypeProvider extends FastifyTypeProvider {
-  output: this['input'] extends ZodTypeAny ? z.infer<this['input']> : unknown
-}
+import { createGoalRoute } from './routes/create-goal.route'
+import { createGoalCompletionRoute } from './routes/create-goal-completion.route'
+import { getPendingGoalsRoute } from './routes/get-pendind-goals.route'
+import { getWeekSummaryRoute } from './routes/get-week-summary.route'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
 app.setValidatorCompiler(validatorCompiler)
 app.setSerializerCompiler(serializerCompiler)
 
-app.post('/goals', { schema: { body: CreateGoalSchema } }, async (req, res) => {
-  const { title, desiredWeeklyFrequency } = req.body
+app.register(createGoalRoute)
+app.register(getPendingGoalsRoute)
+app.register(getWeekSummaryRoute)
+app.register(createGoalCompletionRoute)
 
-  const goal = await createGoal({
-    title: title,
-    desiredWeeklyFrequency: desiredWeeklyFrequency,
+app
+  .listen({
+    port: 3000,
   })
-
-  res.status(201).send(goal)
-})
-
-app.listen({
-  port: 3000,
-})
+  .then(() => {
+    console.log('Server listening on port 3000')
+  })
