@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, sum } from 'drizzle-orm'
+import { and, desc, eq, gte, lte, sum } from 'drizzle-orm'
 import { db } from '../db'
 import { goalCompletions, goals } from '../db/schema'
 import { firstDayOfWeek, lastDayOfWeek } from './get-week-pending-goals'
@@ -48,7 +48,7 @@ export async function getWeekSummary() {
     })
     .from(goals)
     .innerJoin(goalsCompletedInWeek, eq(goals.id, goalsCompletedInWeek.goalId))
-    .orderBy(goalsCompletedInWeek.completedAt)
+    .orderBy(desc(goalsCompletedInWeek.completedAt))
 
   const aggregateGoalsByDay = completedGoals.reduce((acc, goal) => {
     const date = dayjs(goal.completedAt).format('YYYY-MM-DD')
@@ -64,7 +64,11 @@ export async function getWeekSummary() {
     return acc
   }, {} as Record<string, CompletedGoals>)
 
-  return { completedGoals: aggregateGoalsByDay, quantity }
+  return {
+    completedGoals: aggregateGoalsByDay,
+    totalCompletedGoals: completedGoals.length,
+    quantity,
+  }
 }
 
 const translateDayToPortuguese = (completedAt: Date) => {

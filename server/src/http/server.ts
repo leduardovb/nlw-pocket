@@ -8,6 +8,7 @@ import { createGoalRoute } from './routes/create-goal.route'
 import { createGoalCompletionRoute } from './routes/create-goal-completion.route'
 import { getPendingGoalsRoute } from './routes/get-pendind-goals.route'
 import { getWeekSummaryRoute } from './routes/get-week-summary.route'
+import { env } from '../env'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -21,8 +22,8 @@ app.register(createGoalCompletionRoute)
 
 app
   .listen({
-    port: 3000,
+    port: env.PORT,
   })
   .then(() => {
-    console.log('Server listening on port 3000')
+    console.log(`Server listening on port ${env.PORT}`)
   })

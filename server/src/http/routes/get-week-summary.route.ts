@@ -4,10 +4,14 @@ import { getWeekSummary } from '../../functions/get-week-sumarry'
 
 export const getWeekSummaryRoute: FastifyPluginAsyncZod = async (app) => {
   app.get('/goals/summary', async (_, res) => {
-    const { completedGoals, quantity } = await getWeekSummary()
+    console.log('GET /goals/summary')
+
+    const { completedGoals, totalCompletedGoals, quantity } =
+      await getWeekSummary()
     res.status(201).send(
       ResponseDTO.make(201, {
         completedGoals,
+        totalCompletedGoals,
         totalGoalsToComplete: quantity,
       })
     )
